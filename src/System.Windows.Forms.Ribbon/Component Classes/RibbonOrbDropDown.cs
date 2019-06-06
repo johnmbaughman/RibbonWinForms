@@ -65,26 +65,40 @@ namespace System.Windows.Forms
 			//}
 		}
 
-		~RibbonOrbDropDown()
-		{
-			if (Sensor != null)
-			{
-				Sensor.Dispose();
-			}
-			//if (_keyboardHook != null)
-			//{
-			//   _keyboardHook.Dispose();
-			//}
-		}
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (Sensor != null && !Sensor.Disposed)
+            {
+                Sensor.Dispose();
+            }
+            //if (_keyboardHook != null)
+            //{
+            //   _keyboardHook.Dispose();
+            //}
+        }
+        //Finalize is called by base class "System.ComponentModel.Component"
+        //Finalize should normally used to dispose unmanaged resources 
+        //      ~RibbonOrbDropDown()
+        //{
+        //	if (Sensor != null)
+        //	{
+        //		Sensor.Dispose();
+        //	}
+        //	//if (_keyboardHook != null)
+        //	//{
+        //	//   _keyboardHook.Dispose();
+        //	//}
+        //}
 
-		#endregion
+        #endregion
 
-		#region Props
+        #region Props
 
-		/// <summary>
-		/// Gets all items involved in the dropdown
-		/// </summary>
-		internal List<RibbonItem> AllItems
+        /// <summary>
+        /// Gets all items involved in the dropdown
+        /// </summary>
+        internal List<RibbonItem> AllItems
 		{
 			get
 			{
@@ -489,7 +503,7 @@ namespace System.Windows.Forms
 		/// </summary>
 		private void UpdateSensor()
 		{
-			if (Sensor != null)
+			if (Sensor != null && !Sensor.Disposed)
 			{
 				Sensor.Dispose();
 			}
@@ -574,19 +588,19 @@ namespace System.Windows.Forms
 				}
 				if (ButtonsGlyphBounds.Contains(e.Location))
 				{
-					RibbonDesigner.Current.CreteOrbMenuItem(typeof(RibbonOrbMenuItem));
+					RibbonDesigner.Current.CreateOrbMenuItem(typeof(RibbonOrbMenuItem));
 				}
 				else if (ButtonsSeparatorGlyphBounds.Contains(e.Location))
 				{
-					RibbonDesigner.Current.CreteOrbMenuItem(typeof(RibbonSeparator));
+					RibbonDesigner.Current.CreateOrbMenuItem(typeof(RibbonSeparator));
 				}
 				else if (RecentGlyphBounds.Contains(e.Location))
 				{
-					RibbonDesigner.Current.CreteOrbRecentItem(typeof(RibbonOrbRecentItem));
+					RibbonDesigner.Current.CreateOrbRecentItem(typeof(RibbonOrbRecentItem));
 				}
 				else if (OptionGlyphBounds.Contains(e.Location))
 				{
-					RibbonDesigner.Current.CreteOrbOptionItem(typeof(RibbonOrbOptionButton));
+					RibbonDesigner.Current.CreateOrbOptionItem(typeof(RibbonOrbOptionButton));
 				}
 				else
 				{

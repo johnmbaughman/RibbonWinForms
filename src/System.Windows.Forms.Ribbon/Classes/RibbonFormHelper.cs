@@ -12,13 +12,14 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
 using System.Windows.Forms.RibbonHelpers;
 
 namespace System.Windows.Forms
 {
     /// <summary>
     /// This class is used to make a form able to contain a ribbon on the non-client area.
-    /// For further instrucions search "ribbon non-client" on www.menendezpoo.com
+    /// For further instructions search "ribbon non-client" on www.menendezpoo.com
     /// </summary>
     public class RibbonFormHelper
     {
@@ -76,7 +77,7 @@ namespace System.Windows.Forms
             // in case the RibbonForm is started in WindowState.Maximized and the WindowState changes to normal
             // the size of the RibbonForm is set to the values of _storeSize - which has not been set yet!
             if (_storeSize.IsEmpty)
-               _storeSize = Form.Size;
+                _storeSize = Form.Size;
 
             if (WinApi.IsGlassEnabled)
                 Form.Invalidate();
@@ -162,11 +163,20 @@ namespace System.Windows.Forms
 
                 using (Brush b = new SolidBrush(Form.BackColor))
                 {
+                    int left;
+                    int right;
+                    if (WinApi.IsWin10) {
+                        left = 0;
+                        right = Form.Width;
+                    } else {
+                        left = Margins.Left - 0;
+                        right = Form.Width - Margins.Right - 0;
+                    }
                     e.Graphics.FillRectangle(b,
                         Rectangle.FromLTRB(
-                            Margins.Left - 0,
+                            left,
                             Margins.Top + 0,
-                            Form.Width - Margins.Right - 0,
+                            right,
                             Form.Height - Margins.Bottom - 0));
                 }
 
@@ -231,11 +241,23 @@ namespace System.Windows.Forms
         protected virtual void Form_Load(object sender, EventArgs e)
         {
             if (DesignMode) return;
+            if (Ribbon == null) {
+                throw new ArgumentNullException("Ribbon Control was not placed to RibbonForm");
+            }
             WinApi.MARGINS dwmMargins = new WinApi.MARGINS(
                 Margins.Left,
                 Margins.Right,
                 Margins.Bottom + ((Ribbon.OrbStyle == RibbonOrbStyle.Office_2007) ? Ribbon.CaptionBarHeight : Ribbon.CaptionBarHeight + Ribbon.TabsMargin.Top),
                 Margins.Bottom);
+
+            if (WinApi.IsWin10)
+            {
+                dwmMargins.cxLeftWidth = 0;
+                dwmMargins.cxRightWidth = 0;
+                dwmMargins.cyBottomHeight = 0;
+
+                // https://docs.microsoft.com/en-us/windows/desktop/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea
+            }
 
             if (WinApi.IsVista && !_frameExtended)
             {
@@ -250,7 +272,7 @@ namespace System.Windows.Forms
         public virtual void ReapplyGlass()
         {
             _frameExtended = false;
-            Form_Load(this, null);
+            Form_Load(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -258,6 +280,7 @@ namespace System.Windows.Forms
         /// </summary>
         /// <param name="m">Message to process</param>
         /// <returns><c>true</c> if message has been handled. <c>false</c> otherwise</returns>
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
         public virtual bool WndProc(ref Message m)
         {
             if (DesignMode) return false;
@@ -301,6 +324,12 @@ namespace System.Windows.Forms
 
                         MarginsChecked = true;
                     }
+                    if (WinApi.IsWin10)
+                    {
+                        nccsp.rect0.Left += Margins.Left;
+                        nccsp.rect0.Right -= Margins.Right;
+                        nccsp.rect0.Bottom -= Margins.Bottom;
+                    }
 
                     #region Hack to get rid of the black caption bar when form is maximized on multi-monitor setups with DWM enabled
                     // toATwork: on multi-monitor setups the caption bar when the form is maximized the caption bar is black instead of glass
@@ -333,6 +362,17 @@ namespace System.Windows.Forms
                     m.Result = new IntPtr(Convert.ToInt32(NonClientHitTest(new Point(WinApi.LoWord((int)m.LParam), WinApi.HiWord((int)m.LParam)))));
                     handled = true;
                 }
+                else if (m.Msg == WinApi.WM_NCRBUTTONUP) //0x00A5
+                {
+                    int xMouse = WinApi.Get_X_LParam((int)m.LParam);
+                    int yMouse = WinApi.Get_Y_LParam((int)m.LParam);
+                    int hitTest = WinApi.LoWord((int)m.WParam);
+                    if (hitTest == (int)WinApi.HitTest.HTCAPTION || hitTest == (int)WinApi.HitTest.HTSYSMENU)
+                    {
+                        WinApi.ShowSystemMenu(Form, xMouse, yMouse);
+                        handled = true;
+                    }
+                }
                 else if (m.Msg == WinApi.WM_SYSCOMMAND)
                 {
                     uint param = IntPtr.Size == 4 ? (uint)m.WParam.ToInt32() : (uint)m.WParam.ToInt64();
@@ -364,22 +404,29 @@ namespace System.Windows.Forms
         public virtual NonClientHitTestResult NonClientHitTest(Point hitPoint)
         {
 
-            Rectangle topleft = Form.RectangleToScreen(new Rectangle(0, 0, Margins.Left, Margins.Left));
+            int leftX = 0;
+            int rightX = 0;
+            if (WinApi.IsWin10)
+            {
+                leftX = -Margins.Left;
+                rightX = -Margins.Right;
+            }
+            Rectangle topleft = Form.RectangleToScreen(new Rectangle(leftX, 0, Margins.Left, Margins.Left));
 
             if (topleft.Contains(hitPoint))
                 return NonClientHitTestResult.TopLeft;
 
-            Rectangle topright = Form.RectangleToScreen(new Rectangle(Form.Width - Margins.Right, 0, Margins.Right, Margins.Right));
+            Rectangle topright = Form.RectangleToScreen(new Rectangle(rightX + Form.Width - Margins.Right, 0, Margins.Right, Margins.Right));
 
             if (topright.Contains(hitPoint))
                 return NonClientHitTestResult.TopRight;
 
-            Rectangle botleft = Form.RectangleToScreen(new Rectangle(0, Form.Height - Margins.Bottom, Margins.Left, Margins.Bottom));
+            Rectangle botleft = Form.RectangleToScreen(new Rectangle(leftX, Form.Height - Margins.Bottom, Margins.Left, Margins.Bottom));
 
             if (botleft.Contains(hitPoint))
                 return NonClientHitTestResult.BottomLeft;
 
-            Rectangle botright = Form.RectangleToScreen(new Rectangle(Form.Width - Margins.Right, Form.Height - Margins.Bottom, Margins.Right, Margins.Bottom));
+            Rectangle botright = Form.RectangleToScreen(new Rectangle(rightX + Form.Width - Margins.Right, Form.Height - Margins.Bottom, Margins.Right, Margins.Bottom));
 
             if (botright.Contains(hitPoint))
                 return NonClientHitTestResult.BottomRight;
@@ -394,12 +441,12 @@ namespace System.Windows.Forms
             if (cap.Contains(hitPoint))
                 return NonClientHitTestResult.Caption;
 
-            Rectangle left = Form.RectangleToScreen(new Rectangle(0, 0, Margins.Left, Form.Height));
+            Rectangle left = Form.RectangleToScreen(new Rectangle(leftX, 0, Margins.Left, Form.Height));
 
             if (left.Contains(hitPoint))
                 return NonClientHitTestResult.Left;
 
-            Rectangle right = Form.RectangleToScreen(new Rectangle(Form.Width - Margins.Right, 0, Margins.Right, Form.Height));
+            Rectangle right = Form.RectangleToScreen(new Rectangle(rightX + Form.Width - Margins.Right, 0, Margins.Right, Form.Height));
 
             if (right.Contains(hitPoint))
                 return NonClientHitTestResult.Right;
@@ -424,7 +471,16 @@ namespace System.Windows.Forms
             formPadding.Top = p.Bottom - 1;
 
             if (!DesignMode)
+            {
+                if (WinApi.IsWin10)
+                {
+                    formPadding.Left = 0;
+                    formPadding.Right = 0;
+                    formPadding.Bottom = 0;
+                }
+
                 Form.Padding = formPadding;
+            }
         }
 
         #endregion

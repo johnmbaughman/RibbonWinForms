@@ -20,12 +20,13 @@ using System.Windows.Forms.RibbonHelpers;
 
 namespace System.Windows.Forms
 {
+    [System.Security.Permissions.PermissionSet(System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust")]
     public class RibbonDesigner
        : ControlDesigner
     {
         #region Static
 
-        public static RibbonDesigner Current;
+        internal static RibbonDesigner Current;
 
         #endregion
 
@@ -44,13 +45,23 @@ namespace System.Windows.Forms
             Current = this;
         }
 
-        ~RibbonDesigner()
+        protected override void Dispose(bool disposing)
         {
+            base.Dispose(disposing);
             if (Current == this)
             {
                 Current = null;
             }
         }
+        //Finalize is called by base class "System.ComponentModel.Design.ComponentDesigner"
+        //Finalize should normally used to dispose unmanaged resources 
+        //~RibbonDesigner()
+        //{
+        //    if (Current == this)
+        //    {
+        //        Current = null;
+        //    }
+        //}
 
         #endregion
 
@@ -136,7 +147,7 @@ namespace System.Windows.Forms
         /// Creates an Orb's MenuItem
         /// </summary>
         /// <param name="t"></param>
-        public void CreteOrbMenuItem(Type t)
+        public void CreateOrbMenuItem(Type t)
         {
             CreateOrbItem("MenuItems", Ribbon.OrbDropDown.MenuItems, t);
         }
@@ -145,7 +156,7 @@ namespace System.Windows.Forms
         /// Creates an Orb's RecentItem
         /// </summary>
         /// <param name="t"></param>
-        public void CreteOrbRecentItem(Type t)
+        public void CreateOrbRecentItem(Type t)
         {
             CreateOrbItem("RecentItems", Ribbon.OrbDropDown.RecentItems, t);
         }
@@ -154,7 +165,7 @@ namespace System.Windows.Forms
         /// Creates an Orb's OptionItem
         /// </summary>
         /// <param name="t"></param>
-        public void CreteOrbOptionItem(Type t)
+        public void CreateOrbOptionItem(Type t)
         {
             CreateOrbItem("OptionItems", Ribbon.OrbDropDown.OptionItems, t);
         }
