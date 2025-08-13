@@ -44,7 +44,13 @@ For building the setup it is neccessary to install the Wix Toolset VisualStudio 
 - solving open bugs (which are open ?)
 - testing with different environment (Multi monitor, ...)
 - uniform formatting of source code (code style)
-- build a new release (5.0.1.0)
+- build a new release (5.0.2.0)
 - zip of msi files for the new release
 - instead many events in the controls or components it might be better to work with EventHandlerList
 - Xml Document file for Intellisense. There are many warnings when building Xml file
+
+## Release Versions
+
+https://github.com/RibbonWinForms/RibbonWinForms/releases
+
+- 5.0.1.0 release published by adriancs2, UTC time: Sunday, June 23, 2019, 14:03

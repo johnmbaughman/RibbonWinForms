@@ -124,24 +124,20 @@ namespace System.Windows.Forms.RibbonHelpers
         ~GlobalHook()
         {
             Dispose(false);
-            //if (Handle != IntPtr.Zero)
-            //{
-            //    Unhook();
-            //}
         }
 
         #endregion
 
         #region Properties
 
-        /// <summary>
-        /// Gets the type of this hook
-        /// </summary>
+        ///// <summary>
+        ///// Gets the type of this hook
+        ///// </summary>
         //public HookTypes HookType { get { return _hookType; } }
 
-        /// <summary>
-        /// Gets the handle of the hook
-        /// </summary>
+        ///// <summary>
+        ///// Gets the handle of the hook
+        ///// </summary>
         //public IntPtr Handle { get { return _handle; } }
 
         #endregion
@@ -263,7 +259,7 @@ namespace System.Windows.Forms.RibbonHelpers
         /// <summary>
         /// Recieves the actual unsafe mouse hook procedure
         /// </summary>
-        /// <param name="nCode"></param>
+        /// <param name="code"></param>
         /// <param name="wParam"></param>
         /// <param name="lParam"></param>
         /// <returns></returns>
@@ -281,7 +277,7 @@ namespace System.Windows.Forms.RibbonHelpers
                 case HookTypes.Keyboard:
                     return KeyboardProc(code, wParam, lParam);
                 default:
-                    throw new Exception("HookType not supported");
+                    throw new ArgumentException("HookType not supported");
             }
         }
 
@@ -421,8 +417,9 @@ namespace System.Windows.Forms.RibbonHelpers
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
         private void InstallHook()
         {
-            /// Error check
-            if (_handle != IntPtr.Zero) throw new Exception("Hook is already installed");
+            // Error check
+            if (_handle != IntPtr.Zero)
+                throw new InvalidOperationException("Hook is already installed");
 
             #region htype
             int htype = 0;
@@ -436,19 +433,19 @@ namespace System.Windows.Forms.RibbonHelpers
                     htype = WinApi.WH_KEYBOARD_LL;
                     break;
                 default:
-                    throw new Exception("HookType is not supported");
+                    throw new ArgumentException("HookType is not supported");
             }
             #endregion
 
-            /// Delegate to recieve message
+            // Delegate to recieve message
             _HookProc = HookProc;
 
-            /// Hook
-            /// Ed Obeda suggestion for .net 4.0
+            // Hook
+            // Ed Obeda suggestion for .net 4.0
             //_hHook = WinApi.SetWindowsHookEx(htype, _HookProc, Marshal.GetHINSTANCE(Assembly.GetExecutingAssembly().GetModules()[0]), 0);
             _handle = WinApi.SetWindowsHookEx(htype, _HookProc, Process.GetCurrentProcess().MainModule.BaseAddress, 0);
             int lastWin32Error = Marshal.GetLastWin32Error();
-            /// Error check
+            // Error check
             if (_handle == IntPtr.Zero) throw new Win32Exception(lastWin32Error);
         }
 
@@ -490,16 +487,19 @@ namespace System.Windows.Forms.RibbonHelpers
 
         #region IDisposable Members
 
+        /// <summary>
+        /// Dispose
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-            //if (Handle != IntPtr.Zero)
-            //{
-            //    Unhook();
-            //}
         }
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (_handle != IntPtr.Zero)

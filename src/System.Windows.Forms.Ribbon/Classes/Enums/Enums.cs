@@ -15,13 +15,16 @@
         Green,
         Purple,
         JellyBelly,
-        Halloween
+        Halloween,
+        VSLight,
+        VSDark
     }
 
     public enum RibbonOrbStyle
     {
         Office_2007,
         Office_2010,
+        Office_2010_Extended,
         Office_2013 //Michael Spradlin - 05/03/2013 Office 2013 Style Changes
     }
 

@@ -27,6 +27,7 @@ namespace System.Windows.Forms
         #region Ctor
         internal RibbonPanelPopup(RibbonPanel panel)
         {
+            SetStyle(ControlStyles.Opaque, false);
             DoubleBuffered = true;
 
             Sensor = new RibbonMouseSensor(this, panel.Owner, panel.Items)
@@ -41,19 +42,19 @@ namespace System.Windows.Forms
             {
                 panel.overflowBoundsBuffer = panel.Bounds;
                 Size s = panel.SwitchToSize(this, g, GetSizeMode(panel));
-                s.Width += 100;
-                s.Height += 100;
+                //s.Width += 100;
+                //s.Height += 100;
                 Size = s;
-                
+
             }
 
             foreach (RibbonItem item in panel.Items)
             {
                 item.SetCanvas(this);
             }
-        } 
+        }
         #endregion
-        
+
         #region Props
 
         public RibbonMouseSensor Sensor { get; }
@@ -116,9 +117,13 @@ namespace System.Windows.Forms
 
             foreach (RibbonItem item in Panel.Items)
             {
-                item.OnPaint(this, new RibbonElementPaintEventArgs(e.ClipRectangle, e.Graphics, RibbonElementSizeMode.Large));
+                if (item.Visible)
+                {
+                    item.OnPaint(this, new RibbonElementPaintEventArgs(e.ClipRectangle, e.Graphics, RibbonElementSizeMode.Large));
+                }
             }
 
+            Panel.Owner.Renderer.OnRenderRibbonPanelBackground(new RibbonPanelRenderEventArgs(Panel.Owner, e.Graphics, e.ClipRectangle, Panel, this));
             Panel.Owner.Renderer.OnRenderRibbonPanelText(new RibbonPanelRenderEventArgs(Panel.Owner, e.Graphics, e.ClipRectangle, Panel, this));
 
         }
@@ -138,16 +143,16 @@ namespace System.Windows.Forms
             Panel.Owner.ResumeSensor();
 
             Panel.PopupShowed = false;
-            
+
             Panel.Owner.RedrawArea(Panel.Bounds);
             base.OnClosed(e);
-        } 
+        }
 
         #endregion
 
         #region Shadow
 
-        
+
 
 
         #endregion

@@ -48,12 +48,26 @@ namespace System.Windows.Forms
             _dropDownButtonVisible = true;
         }
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && RibbonDesigner.Current == null)
             {
-                foreach (RibbonItem item in _items)
-                    item.Dispose();
+                try
+                {
+                    foreach (RibbonItem item in _items)
+                        item.Dispose();
+                }
+                catch (InvalidOperationException)
+                {
+                    if (!IsOpenInVisualStudioDesigner())
+                    {
+                        throw;
+                    }
+                }
                 _dropDownButton.Dispose();
                 _sensor.Dispose();
             }
@@ -70,8 +84,8 @@ namespace System.Windows.Forms
 
             if (renderer != null)
             {
-               dk = renderer.ColorTable.Arrow;
-               lt = renderer.ColorTable.ArrowLight;
+                dk = renderer.ColorTable.Arrow;
+                lt = renderer.ColorTable.ArrowLight;
             }
 
             using (Graphics g = Graphics.FromImage(bmp))
@@ -92,7 +106,7 @@ namespace System.Windows.Forms
                 {
 
                     g.DrawLine(p, x, y, x + 4, y);
-                    g.FillPolygon(b, new[] { 
+                    g.FillPolygon(b, new[] {
                             new Point(x, y + 3),
                             new Point(x + 5, y + 3),
                             new Point(x + 2, y + 6)
@@ -109,7 +123,7 @@ namespace System.Windows.Forms
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public override string Name
         {
-           get => base.Name;
+            get => base.Name;
             set => base.Name = value;
         }
 
@@ -202,7 +216,7 @@ namespace System.Windows.Forms
 
                 foreach (RibbonItem item in Items)
                 {
-                    if ( item.Visible )
+                    if (item.Visible)
                         item.OnPaint(this, new RibbonElementPaintEventArgs(item.Bounds, e.Graphics, RibbonElementSizeMode.Compact));
                 }
             }
@@ -210,9 +224,9 @@ namespace System.Windows.Forms
 
         public override Size MeasureSize(object sender, RibbonElementMeasureSizeEventArgs e)
         {
-            ///For RibbonItemGroup, size is always compact, and it's designed to be on an horizontal flow
-            ///tab panel.
-            ///
+            //For RibbonItemGroup, size is always compact, and it's designed to be on an horizontal flow
+            //tab panel.
+            //
             if (!Visible || !Owner.CaptionBarVisible)
             {
                 SetLastMeasuredSize(new Size(0, 0));

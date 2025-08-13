@@ -46,17 +46,17 @@ namespace System.Windows.Forms
 
         internal override void SetOwner(RibbonPanel item)
         {
-           item.SetOwner(Owner);
-           item.SetOwnerTab(OwnerTab);
+            item.SetOwner(Owner);
+            item.SetOwnerTab(OwnerTab);
         }
 
         internal override void ClearOwner(RibbonPanel item)
         {
-           item.ClearOwner();
+            item.ClearOwner();
         }
 
         /// <summary>
-        /// Notifies the <see cref="OwnerTab"/> and <see cref="OwnerPanel"/> about changes in the <see cref="RibbonItemCollection"/>.
+        /// Notifies the <see cref="OwnerTab"/> and <see cref="Owner"/> about changes in the <see cref="RibbonItemCollection"/>.
         /// </summary>
         internal override void UpdateRegions()
         {
@@ -80,11 +80,11 @@ namespace System.Windows.Forms
         /// </summary>
         internal override void SetOwner(Ribbon owner)
         {
-           base.SetOwner(owner);
-           foreach (RibbonPanel panel in this)
-           {
-              panel.SetOwner(owner);
-           }
+            base.SetOwner(owner);
+            foreach (RibbonPanel panel in this)
+            {
+                panel.SetOwner(owner);
+            }
         }
 
         /// <summary>

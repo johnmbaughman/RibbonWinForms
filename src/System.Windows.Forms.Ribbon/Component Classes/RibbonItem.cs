@@ -20,6 +20,7 @@ namespace System.Windows.Forms
     public abstract class RibbonItem : Component, IRibbonElement, IRibbonToolTip
     {
         #region Fields
+        private bool? _isopeninvisualstudiodesigner; 
         private string _text;
         private Image _image;
         private bool _checked;
@@ -103,6 +104,36 @@ namespace System.Windows.Forms
             _TT.Popup += _TT_Popup;
         }
 
+        /// <summary>
+        /// RibbonItem is open in Visual Studio Designer
+        /// </summary>
+        protected bool IsOpenInVisualStudioDesigner()
+        {
+            if (!_isopeninvisualstudiodesigner.HasValue)
+            {
+                _isopeninvisualstudiodesigner = LicenseManager.UsageMode == LicenseUsageMode.Designtime ||
+                                                this.DesignMode;
+                if (!_isopeninvisualstudiodesigner.Value)
+                {
+                    try
+                    {
+                        using (var process = System.Diagnostics.Process.GetCurrentProcess())
+                        {
+                            _isopeninvisualstudiodesigner = process.ProcessName.ToLowerInvariant().Contains("devenv");
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+            return _isopeninvisualstudiodesigner.Value;
+        }
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && RibbonDesigner.Current == null)
@@ -113,8 +144,9 @@ namespace System.Windows.Forms
                 _TT.Popup -= _TT_Popup;
 
                 _TT.Dispose();
-                if (Image != null)
-                    Image.Dispose();
+                //Dont Dispose Image, could be an Ressource Image
+                //if (Image != null)
+                //    Image.Dispose();
             }
 
             base.Dispose(disposing);

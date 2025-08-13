@@ -25,7 +25,7 @@ namespace System.Windows.Forms
         /// Creates a new RibbonTabCollection
         /// </summary>
         /// <param name="owner">|</param>
-        /// <exception cref="AgrumentNullException">owner is null</exception>
+        /// <exception cref="ArgumentNullException">owner is null</exception>
         internal RibbonTabCollection(Ribbon owner)
            : base(owner)
         {
@@ -34,12 +34,12 @@ namespace System.Windows.Forms
 
         internal override void SetOwner(RibbonTab item)
         {
-           item.SetOwner(Owner);
+            item.SetOwner(Owner);
         }
 
         internal override void ClearOwner(RibbonTab item)
         {
-           item.ClearOwner();
+            item.ClearOwner();
         }
 
         internal override void UpdateRegions()

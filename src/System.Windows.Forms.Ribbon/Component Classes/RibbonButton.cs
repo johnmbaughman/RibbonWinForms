@@ -69,10 +69,10 @@ namespace System.Windows.Forms
         /// <summary>
         /// Creates a new button
         /// </summary>
-        /// <param name="image">Image of the button (32 x 32 suggested)</param>
-        /// <param name="smallImage">Image of the button when in medium of compact mode (16 x 16 suggested)</param>
-        /// <param name="style">Style of the button</param>
-        /// <param name="text">Text of the button</param>
+        ///// <param name="image">Image of the button (32 x 32 suggested)</param>
+        ///// <param name="smallImage">Image of the button when in medium of compact mode (16 x 16 suggested)</param>
+        ///// <param name="style">Style of the button</param>
+        ///// <param name="text">Text of the button</param>
         public RibbonButton()
         {
             _style = RibbonButtonStyle.Normal;
@@ -99,15 +99,21 @@ namespace System.Windows.Forms
             SmallImage = smallImage;
         }
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && RibbonDesigner.Current == null)
             {
                 RemoveHandlers();
-                if (SmallImage != null)
-                    SmallImage.Dispose();
-                if (FlashSmallImage != null)
-                    FlashSmallImage.Dispose();
+
+                //Dont Dispose Image, could be an Ressource Image
+                //if (SmallImage != null)
+                //    SmallImage.Dispose();
+                //if (FlashSmallImage != null)
+                //    FlashSmallImage.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -198,7 +204,7 @@ namespace System.Windows.Forms
         public bool DrawDropDownIconsBar { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating if the <see cref="Checked"/> property should be toggled
+        /// Gets or sets a value indicating if the <see cref="RibbonItem.Checked"/> property should be toggled
         /// when button is clicked
         /// </summary>
         [DefaultValue(false)]
@@ -402,7 +408,7 @@ namespace System.Windows.Forms
         #region Methods
 
         /// <summary>
-        /// Sets the value of the <see cref="DropDownMargin"/> property
+        /// Sets the value of the <see cref="_dropDownMargin"/> property
         /// </summary>
         /// <param name="p"></param>
         protected void SetDropDownMargin(Padding p)
@@ -635,9 +641,10 @@ namespace System.Windows.Forms
             {
                 if (Image != null)
                 {
+                    int marginTop = Owner == null ? 0 : Owner.ItemMargin.Top;
                     return new Rectangle(
                     Bounds.Left + ((Bounds.Width - Image.Width) / 2),
-                    Bounds.Top + Owner.ItemMargin.Top,
+                    Bounds.Top + marginTop,
                     Image.Width,
                     Image.Height);
                 }
@@ -681,11 +688,22 @@ namespace System.Windows.Forms
 
             if (sMode == RibbonElementSizeMode.Large)
             {
-                return Rectangle.FromLTRB(
-                    Bounds.Left + Owner.ItemMargin.Left,
-                    Bounds.Top + Owner.ItemMargin.Top + imgh,
-                    Bounds.Right - Owner.ItemMargin.Right,
-                    Bounds.Bottom - Owner.ItemMargin.Bottom);
+                if (Owner == null)
+                {
+                    return Rectangle.FromLTRB(
+                        Bounds.Left,
+                        Bounds.Top + imgh,
+                        Bounds.Right,
+                        Bounds.Bottom);
+                }
+                else
+                {
+                    return Rectangle.FromLTRB(
+                        Bounds.Left + Owner.ItemMargin.Left,
+                        Bounds.Top + Owner.ItemMargin.Top + imgh,
+                        Bounds.Right - Owner.ItemMargin.Right,
+                        Bounds.Bottom - Owner.ItemMargin.Bottom);
+                }
             }
 
             // ddw is the dropdown arrow width
@@ -828,7 +846,7 @@ namespace System.Windows.Forms
         /// <returns></returns>
         public override Size MeasureSize(object sender, RibbonElementMeasureSizeEventArgs e)
         {
-            if (!Visible && !Owner.IsDesignMode())
+            if (Owner == null || (!Visible && !Owner.IsDesignMode()))
             {
                 SetLastMeasuredSize(new Size(0, 0));
                 return LastMeasuredSize;
@@ -879,7 +897,7 @@ namespace System.Windows.Forms
                     heightSum += simg.Height;
                     break;
                 default:
-                    throw new ApplicationException("SizeMode not supported: " + e.SizeMode);
+                    throw new ArgumentException("SizeMode not supported: " + e.SizeMode);
             }
 
             //if (theSize == RibbonElementSizeMode.DropDown)
@@ -923,7 +941,7 @@ namespace System.Windows.Forms
         /// <param name="pressed">Value that indicates if the dropdown button is pressed</param>
         internal void SetDropDownPressed(bool pressed)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -933,7 +951,7 @@ namespace System.Windows.Forms
         internal void SetDropDownSelected(bool selected)
         {
             //Dont use, an overflow occours
-            throw new Exception();
+            throw new NotSupportedException();
         }
 
         /// <summary>

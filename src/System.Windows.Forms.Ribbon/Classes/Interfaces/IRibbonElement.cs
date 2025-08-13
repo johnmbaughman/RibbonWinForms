@@ -22,7 +22,6 @@ namespace System.Windows.Forms
         /// <summary>
         /// Called on every element when its time to draw itself
         /// </summary>
-        /// <param name="g">Device to draw</param>
         /// <param name="sender">Object that is invoking the paint element</param>
         /// <param name="e">Paint event data</param>
         void OnPaint(Object sender, RibbonElementPaintEventArgs e);
@@ -42,7 +41,7 @@ namespace System.Windows.Forms
         /// <summary>
         /// Gets the bounds of the item
         /// </summary>
-        Rectangle Bounds { get;}
+        Rectangle Bounds { get; }
 
         /// <summary>
         /// Gets the Ribbon owner of this item.

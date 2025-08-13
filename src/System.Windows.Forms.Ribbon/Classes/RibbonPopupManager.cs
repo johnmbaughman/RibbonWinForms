@@ -155,46 +155,50 @@ namespace System.Windows.Forms
         internal static bool FeedMouseWheel(MouseEventArgs e)
         {
             RibbonDropDown dd = LastPopup as RibbonDropDown;
-            
+
             if (dd != null)
             {
-                foreach (RibbonItem item in dd.Items)
+                WinApi.POINT pos;
+                if (WinApi.GetCursorPos(out pos))
                 {
-                    if (dd.RectangleToScreen(item.Bounds).Contains(e.Location))
+                    foreach (RibbonItem item in dd.Items)
                     {
-                        IScrollableRibbonItem sc = item as IScrollableRibbonItem;
-
-                        if (sc != null)
+                        if (dd.RectangleToScreen(item.Bounds).Contains(pos.x, pos.y))
+                        //if (dd.RectangleToScreen(item.Bounds).Contains(e.Location))
                         {
-                            if (e.Delta < 0)
-                            {
-                                sc.ScrollDown();
-                            }
-                            else
-                            {
-                                sc.ScrollUp();
-                            }
+                            IScrollableRibbonItem sc = item as IScrollableRibbonItem;
 
-                            return true;
+                            if (sc != null)
+                            {
+                                if (e.Delta < 0)
+                                {
+                                    sc.ScrollDown();
+                                }
+                                else
+                                {
+                                    sc.ScrollUp();
+                                }
+
+                                return true;
+                            }
                         }
                     }
-                    
                 }
             }
-           //kevin carbis - added scrollbar support to dropdowns so we need to feed the mouse wheel to the 
-           //actual dropdown item if it was not intended for a child item.
+            //kevin carbis - added scrollbar support to dropdowns so we need to feed the mouse wheel to the 
+            //actual dropdown item if it was not intended for a child item.
             if (dd != null)
             {
-               if (e.Delta < 0)
-               {
-                  dd.ScrollDown();
-               }
-               else
-               {
-                  dd.ScrollUp();
-               }
+                if (e.Delta < 0)
+                {
+                    dd.ScrollDown();
+                }
+                else
+                {
+                    dd.ScrollUp();
+                }
 
-               return true;
+                return true;
             }
             return false;
         }

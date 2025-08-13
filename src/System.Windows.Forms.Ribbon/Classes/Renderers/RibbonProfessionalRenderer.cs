@@ -258,8 +258,9 @@ namespace System.Windows.Forms
         /// Draws an arrow on the specified bounds
         /// </summary>
         /// <param name="g"></param>
-        /// <param name="bounds"></param>
+        /// <param name="b"></param>
         /// <param name="c"></param>
+        /// <param name="d"></param>
         public void DrawArrow(Graphics g, Rectangle b, Color c, RibbonArrowDirection d)
         {
             GraphicsPath path = new GraphicsPath();
@@ -312,11 +313,13 @@ namespace System.Windows.Forms
         public void DrawArrowShaded(Graphics g, Rectangle b, RibbonArrowDirection d, bool enabled)
         {
             Size arrSize = arrowSize;
+            Point lightOffset = new Point(0, 1);
 
             if (d == RibbonArrowDirection.Left || d == RibbonArrowDirection.Right)
             {
                 //Invert size
-                arrSize = new Size(arrowSize.Height, arrowSize.Width);
+                arrSize = new Size(arrowSize.Height, arrowSize.Width + 1);
+                lightOffset = new Point(1, 0);
             }
 
             Point arrowP = new Point(
@@ -325,7 +328,8 @@ namespace System.Windows.Forms
                  );
 
             Rectangle bounds = new Rectangle(arrowP, arrSize);
-            Rectangle boundsLight = bounds; boundsLight.Offset(0, 1);
+            Rectangle boundsLight = bounds; 
+            boundsLight.Offset(lightOffset);
 
             Color lt = ColorTable.ArrowLight;
             Color dk = ColorTable.Arrow;
@@ -384,7 +388,7 @@ namespace System.Windows.Forms
         /// <summary>
         /// Creates the path of the tab and its contents
         /// </summary>
-        /// <param name="tab"></param>
+        /// <param name="t"></param>
         /// <returns></returns>
         public GraphicsPath CreateCompleteTabPath_2007(RibbonTab t)
         {
@@ -441,7 +445,7 @@ namespace System.Windows.Forms
         /// <summary>
         /// Creates the path of the tab and its contents
         /// </summary>
-        /// <param name="tab"></param>
+        /// <param name="t"></param>
         /// <returns></returns>
         public GraphicsPath CreateCompleteTopTabPath_2010(RibbonTab t)
         {
@@ -482,7 +486,7 @@ namespace System.Windows.Forms
         /// <summary>
         /// Creates the path of the tab and its contents
         /// </summary>
-        /// <param name="tab"></param>
+        /// <param name="t"></param>
         /// <returns></returns>
         public GraphicsPath CreateCompleteTabPath_2013(RibbonTab t)
         {
@@ -506,7 +510,7 @@ namespace System.Windows.Forms
         /// <summary>
         /// Creates the path of the tab and its contents
         /// </summary>
-        /// <param name="tab"></param>
+        /// <param name="t"></param>
         /// <returns></returns>
         public GraphicsPath CreateTabPath_2010(RibbonTab t)
         {
@@ -527,7 +531,7 @@ namespace System.Windows.Forms
         /// <summary>
         /// Creates the path of the tab and its contents
         /// </summary>
-        /// <param name="tab"></param>
+        /// <param name="t"></param>
         /// <returns></returns>
         public GraphicsPath CreateTabPath_2013(RibbonTab t)
         {
@@ -609,7 +613,8 @@ namespace System.Windows.Forms
 
             #region Office_2010
 
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if ((e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010) ||
+                (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
             {
                 //Background (content) gradient
                 using (GraphicsPath path = FlatRectangle(e.Tab.TabContentBounds))
@@ -785,7 +790,8 @@ namespace System.Windows.Forms
 
             #region Office_2010
 
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if ((e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010) ||
+                (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
             {
                 if (e.Ribbon.ActualBorderMode == RibbonWindowMode.NonClientAreaGlass)
                 {
@@ -965,7 +971,8 @@ namespace System.Windows.Forms
 
             #region Office_2010
 
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if ((e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010) ||
+                (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
             {
                 //background
                 Rectangle outerR = Rectangle.FromLTRB(e.Tab.TabBounds.Left, e.Tab.TabBounds.Top, e.Tab.TabBounds.Right - 1, e.Tab.TabBounds.Bottom);
@@ -1096,7 +1103,7 @@ namespace System.Windows.Forms
             if (e.Tab.Invisible)
                 return;
 
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
             {
                 Rectangle glossy = new Rectangle(e.Tab.TabBounds.Left, e.Tab.TabBounds.Top, e.Tab.TabBounds.Width, 4);
                 Rectangle shadow = e.Tab.TabBounds; shadow.Offset(2, 1);
@@ -1114,8 +1121,8 @@ namespace System.Windows.Forms
                             ColorBlend cb = new ColorBlend(3)
                             {
                                 Colors = new[]{Color.Transparent,
-                    Color.FromArgb(50, Color.Black),
-                    Color.FromArgb(100, Color.Black)},
+                                Color.FromArgb(50, Color.Black),
+                                Color.FromArgb(100, Color.Black)},
                                 Positions = new[] { 0f, .1f, 1f }
                             };
 
@@ -1261,7 +1268,8 @@ namespace System.Windows.Forms
 
                 #region Office_2010
 
-                if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+                if ((e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010) ||
+                    (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
                 {
                     //background
                     Rectangle outerR = Rectangle.FromLTRB(e.Tab.TabBounds.Left, e.Tab.TabBounds.Top, e.Tab.TabBounds.Right - 1, e.Tab.TabBounds.Bottom);
@@ -1373,7 +1381,8 @@ namespace System.Windows.Forms
                         e.Graphics.FillRectangle(b, r);
                     }
                 }
-                if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+                if ((e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010) ||
+                    (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
                 {
                     if (e.Ribbon.ActualBorderMode == RibbonWindowMode.NonClientAreaGlass)
                     {
@@ -1463,7 +1472,8 @@ namespace System.Windows.Forms
 
             #region Office_2010
 
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if ((e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010) ||
+                (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
             {
                 Rectangle innerLightBorder = Rectangle.FromLTRB(
                     e.Panel.Bounds.Left,
@@ -1520,6 +1530,22 @@ namespace System.Windows.Forms
                     e.Graphics.SmoothingMode = SmoothingMode.None;
                     e.Graphics.DrawLine(p, innerLightBorder.Left, innerLightBorder.Bottom, innerLightBorder.Right, innerLightBorder.Bottom);
                     e.Graphics.SmoothingMode = sm;
+                }
+
+                if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
+                {
+                    var textArea2 = Rectangle.FromLTRB(
+                        e.Panel.Bounds.Left + 1,
+                        e.Panel.ContentBounds.Bottom,
+                        e.Panel.Bounds.Right - 1,
+                        e.Panel.Bounds.Bottom - 1);
+                    using (var txt2 = RoundRectangle(textArea2, 3, Corners.SouthEast | Corners.SouthWest))
+                    {
+                        using (var b2 = new SolidBrush(Color.FromArgb(200, LightenColor(ColorTable.PanelTextBackground, 0.2F))))
+                        {
+                            e.Graphics.FillPath(b2, txt2);
+                        }
+                    }
                 }
             }
 
@@ -1620,7 +1646,8 @@ namespace System.Windows.Forms
 
             #region Office_2010
 
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if ((e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010) ||
+                (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
             {
                 Rectangle innerLightBorder = Rectangle.FromLTRB(
                      e.Panel.Bounds.Left,
@@ -1735,6 +1762,22 @@ namespace System.Windows.Forms
                     e.Graphics.SmoothingMode = sm;
                 }
 
+                if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
+                {
+                    var textArea2 = Rectangle.FromLTRB(
+                        e.Panel.Bounds.Left + 1,
+                        e.Panel.ContentBounds.Bottom,
+                        e.Panel.Bounds.Right - 1,
+                        e.Panel.Bounds.Bottom - 1);
+                    using (var txt2 = RoundRectangle(textArea2, 3, Corners.SouthEast | Corners.SouthWest))
+                    {
+                        using (var b2 = new SolidBrush(ColorTable.PanelTextBackground))
+                        {
+                            e.Graphics.FillPath(b2, txt2);
+                        }
+                    }
+                }
+
                 if (e.Panel.ButtonMoreVisible)
                 {
                     if (e.Panel.ButtonMorePressed)
@@ -1777,7 +1820,8 @@ namespace System.Windows.Forms
 
             #region Office_2010
 
-            if (_ownerRibbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if ((_ownerRibbon.OrbStyle == RibbonOrbStyle.Office_2010) ||
+                (_ownerRibbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
             {
                 Color dark = enabled ? Color.FromArgb(180, ColorTable.Arrow) : ColorTable.ArrowDisabled;
 
@@ -2060,7 +2104,7 @@ namespace System.Windows.Forms
 
                     }
 
-                    if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+                    if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
                     {
                         using (StringFormat sf = StringFormatFactory.CenterNearTrimChar())
                         using (SolidBrush b = new SolidBrush(GetTextColor(e.Panel.Enabled, ColorTable.Text)))
@@ -2102,7 +2146,6 @@ namespace System.Windows.Forms
         /// <summary>
         /// Gets the corners to round on the specified button
         /// </summary>
-        /// <param name="r"></param>
         /// <param name="button"></param>
         /// <returns></returns>
         private Corners ButtonCorners(RibbonButton button)
@@ -2210,8 +2253,9 @@ namespace System.Windows.Forms
         /// <summary>
         /// Draws a regular button in normal state
         /// </summary>
-        /// <param name="e"></param>
-        /// <param name="button"></param>
+        /// <param name="g"></param>
+        /// <param name="bounds"></param>
+        /// <param name="corners"></param>
         public void DrawButton(Graphics g, Rectangle bounds, Corners corners)
         {
             if (bounds.Height <= 0 || bounds.Width <= 0) return;
@@ -2335,6 +2379,7 @@ namespace System.Windows.Forms
         /// </summary>
         /// <param name="g"></param>
         /// <param name="button"></param>
+        /// <param name="textLayout"></param>
         public void DrawButtonDropDownArrow(Graphics g, RibbonButton button, Rectangle textLayout)
         {
             Rectangle bounds = Rectangle.Empty;
@@ -2360,8 +2405,9 @@ namespace System.Windows.Forms
         /// <summary>
         /// Draws a regular button in disabled state
         /// </summary>
-        /// <param name="e"></param>
-        /// <param name="button"></param>
+        /// <param name="g"></param>
+        /// <param name="bounds"></param>
+        /// <param name="corners"></param>
         public void DrawButtonDisabled(Graphics g, Rectangle bounds, Corners corners)
         {
             if (bounds.Height <= 0 || bounds.Width <= 0) return;
@@ -2453,12 +2499,14 @@ namespace System.Windows.Forms
         /// <summary>
         /// Draws a regular button in pressed state
         /// </summary>
-        /// <param name="e"></param>
-        /// <param name="button"></param>
+        /// <param name="g"></param>
+        /// <param name="bounds"></param>
+        /// <param name="corners"></param>
+        /// <param name="ribbon"></param>
         public void DrawButtonPressed(Graphics g, Rectangle bounds, Corners corners, Ribbon ribbon)
         {
             //Michael Spradlin - 05/03/2013 Office 2013 Style Changes
-            if (ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if (ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
             {
                 Rectangle outerR = Rectangle.FromLTRB(bounds.Left, bounds.Top, bounds.Right - 1, bounds.Bottom - 1);
 
@@ -2547,14 +2595,16 @@ namespace System.Windows.Forms
         /// <summary>
         /// Draws a regular buttton in selected state
         /// </summary>
-        /// <param name="e"></param>
-        /// <param name="button"></param>
+        /// <param name="g"></param>
+        /// <param name="bounds"></param>
+        /// <param name="corners"></param>
+        /// <param name="ribbon"></param>
         public void DrawButtonSelected(Graphics g, Rectangle bounds, Corners corners, Ribbon ribbon)
         {
             if (bounds.Height <= 0 || bounds.Width <= 0) return;
 
             //Michael Spradlin - 05/03/2013 Office 2013 Style Changes
-            if (ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if (ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
             {
                 Rectangle outerR = Rectangle.FromLTRB(bounds.Left, bounds.Top, bounds.Right - 1, bounds.Bottom - 1);
 
@@ -2643,6 +2693,7 @@ namespace System.Windows.Forms
         /// </summary>
         /// <param name="g"></param>
         /// <param name="button"></param>
+        /// <param name="ribbon"></param>
         public void DrawButtonPressed(Graphics g, RibbonButton button, Ribbon ribbon)
         {
             DrawButtonPressed(g, button.Bounds, ButtonCorners(button), ribbon);
@@ -2653,6 +2704,7 @@ namespace System.Windows.Forms
         /// </summary>
         /// <param name="g"></param>
         /// <param name="button"></param>
+        /// <param name="ribbon"></param>
         public void DrawButtonChecked(Graphics g, RibbonButton button, Ribbon ribbon)
         {
             DrawButtonChecked(g, button.Bounds, ButtonCorners(button), ribbon);
@@ -2663,6 +2715,7 @@ namespace System.Windows.Forms
         /// </summary>
         /// <param name="g"></param>
         /// <param name="button"></param>
+        /// <param name="ribbon"></param>
         public void DrawButtonCheckedSelected(Graphics g, RibbonButton button, Ribbon ribbon)
         {
             DrawButtonCheckedSelected(g, button.Bounds, ButtonCorners(button), ribbon);
@@ -2672,14 +2725,16 @@ namespace System.Windows.Forms
         /// Draws the button as checked
         /// </summary>
         /// <param name="g"></param>
-        /// <param name="button"></param>
+        /// <param name="bounds"></param>
+        /// <param name="corners"></param>
+        /// <param name="ribbon"></param>
         public void DrawButtonChecked(Graphics g, Rectangle bounds, Corners corners, Ribbon ribbon)
         {
             if (bounds.Height <= 0 || bounds.Width <= 0) return;
 
             #region Office_2007_2010
 
-            if (ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if (ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
             {
 
                 Rectangle outerR = Rectangle.FromLTRB(bounds.Left, bounds.Top, bounds.Right - 1, bounds.Bottom - 1);
@@ -2775,13 +2830,15 @@ namespace System.Windows.Forms
         /// <summary>
         /// Draws a regular button in the Checked and Selected state
         /// </summary>
-        /// <param name="e"></param>
-        /// <param name="button"></param>
+        /// <param name="g"></param>
+        /// <param name="bounds"></param>
+        /// <param name="corners"></param>
+        /// <param name="ribbon"></param>
         public void DrawButtonCheckedSelected(Graphics g, Rectangle bounds, Corners corners, Ribbon ribbon)
         {
             #region Office_2007_2010
 
-            if (ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if (ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
             {
                 Rectangle outerR = Rectangle.FromLTRB(bounds.Left, bounds.Top, bounds.Right - 1, bounds.Bottom - 1);
 
@@ -2877,6 +2934,7 @@ namespace System.Windows.Forms
         /// </summary>
         /// <param name="g"></param>
         /// <param name="button"></param>
+        /// <param name="ribbon"></param>
         public void DrawButtonSelected(Graphics g, RibbonButton button, Ribbon ribbon)
         {
             DrawButtonSelected(g, button.Bounds, ButtonCorners(button), ribbon);
@@ -3031,7 +3089,7 @@ namespace System.Windows.Forms
         /// Draws the background of the specified  RibbonItemGroup
         /// </summary>
         /// <param name="e"></param>
-        /// <param name="?"></param>
+        /// <param name="grp"></param>
         public void DrawItemGroup(RibbonItemRenderEventArgs e, RibbonItemGroup grp)
         {
 
@@ -3080,7 +3138,7 @@ namespace System.Windows.Forms
         /// Draws the background of the specified  RibbonItemGroup
         /// </summary>
         /// <param name="e"></param>
-        /// <param name="?"></param>
+        /// <param name="grp"></param>
         public void DrawItemGroupBorder(RibbonItemRenderEventArgs e, RibbonItemGroup grp)
         {
 
@@ -3404,7 +3462,7 @@ namespace System.Windows.Forms
 
             #region Office_2010
 
-            if (ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if ((ribbon.OrbStyle == RibbonOrbStyle.Office_2010) || (ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
             {
                 if (separator.SizeMode == RibbonElementSizeMode.DropDown)
                 {
@@ -3559,13 +3617,13 @@ namespace System.Windows.Forms
         {
             using (GraphicsPath path = RoundRectangle(bounds, 3))
             {
-                using (SolidBrush b = new SolidBrush(SystemColors.Window))
+                using (SolidBrush b = new SolidBrush(ColorTable.TextBoxSelectedBg))
                 {
                     //g.FillPath(b, path);
                     g.FillRectangle(b, bounds);
                 }
 
-                using (Pen p = new Pen(ColorTable.TextBoxBorder))
+                using (Pen p = new Pen(ColorTable.TextBoxSelectedBorder))
                 {
                     //g.DrawPath(p, path);
                     g.DrawRectangle(p, bounds);
@@ -3666,7 +3724,14 @@ namespace System.Windows.Forms
             Font ft = new Font(SystemFonts.CaptionFont, FontStyle.Regular);
             if (e.Ribbon.ActualBorderMode == RibbonWindowMode.NonClientAreaGlass)
             {
-                WinApi.DrawTextOnGlass(e.Graphics, f.Text, SystemFonts.CaptionFont, captionBar, 10);
+                if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
+                {
+                    WinApi.DrawTextOnGlass(e.Graphics, f.Text, ft, captionBar, 10);
+                }
+                else
+                {
+                    WinApi.DrawTextOnGlass(e.Graphics, f.Text, SystemFonts.CaptionFont, captionBar, 10);
+                }
             }
             else if (e.Ribbon.ActualBorderMode == RibbonWindowMode.NonClientAreaCustomDrawn)
             {
@@ -3703,9 +3768,9 @@ namespace System.Windows.Forms
             }
             else
             {
-                ///   a-----b    a-----b
-                ///  |     z    |       z
-                ///   c---d      c-----d
+                //   a-----b    a-----b
+                //  |     z    |       z
+                //   c---d      c-----d
                 path.AddLine(d, c);
                 path.AddArc(new Rectangle(a.X - bounds.Height / 2, a.Y, bounds.Height, bounds.Height), 90, 180);
                 path.AddLine(a, b);
@@ -3728,8 +3793,8 @@ namespace System.Windows.Forms
         /// Draws the orb on the specified state
         /// </summary>
         /// <param name="g">Device to draw</param>
-        /// <param name="ribbon">Ribbon that the orb belongs to</param>
         /// <param name="r">Layout rectangle for the orb</param>
+        /// <param name="image"></param>
         /// <param name="selected">Specifies if the orb should be drawn as selected</param>
         /// <param name="pressed">Specifies if the orb should be drawn as pressed</param>
         public void DrawOrb(Graphics g, Rectangle r, Image image, bool selected, bool pressed)
@@ -3911,7 +3976,7 @@ namespace System.Windows.Forms
             //    g.FillPath(Brushes.White, p);
             //}
 
-            ///Upper shine
+            //Upper shine
             using (GraphicsPath p = new GraphicsPath())
             {
                 sweep = 160;
@@ -3980,11 +4045,10 @@ namespace System.Windows.Forms
         /// Draws the orb button in a normal state
         /// </summary>
         /// <param name="e"></param>
-        /// <param name="button"></param>
         public void DrawOrbNormal(RibbonRenderEventArgs e)
         {
             //Michael Spradlin - 05/03/2013 Office 2013 Style Changes
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
             {
                 using (GraphicsPath path = RoundRectangle(e.ClipRectangle, 2, Corners.North))
                 {
@@ -4037,11 +4101,10 @@ namespace System.Windows.Forms
         /// Draws the orb button in a selected state
         /// </summary>
         /// <param name="e"></param>
-        /// <param name="button"></param>
         public void DrawOrbSelected(RibbonRenderEventArgs e)
         {
             //Michael Spradlin - 05/03/2013 Office 2013 Style Changes
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
             {
                 using (GraphicsPath path = RoundRectangle(e.ClipRectangle, 2, Corners.North))
                 {
@@ -4093,11 +4156,10 @@ namespace System.Windows.Forms
         /// Draws the orb button in pressed state
         /// </summary>
         /// <param name="e"></param>
-        /// <param name="button"></param>
         public void DrawOrbPressed(RibbonRenderEventArgs e)
         {
             //Michael Spradlin - 05/03/2013 Office 2013 Style Changes
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
             {
                 using (GraphicsPath path = RoundRectangle(e.ClipRectangle, 2, Corners.North))
                 {
@@ -4190,8 +4252,13 @@ namespace System.Windows.Forms
             Color OrbDropDownSeparatorlight = ColorTable.OrbDropDownSeparatorlight;
             Color OrbDropDownSeparatordark = ColorTable.OrbDropDownSeparatordark;
 
-            GraphicsPath innerPath = RoundRectangle(InnerRect, 6);
-            GraphicsPath outerPath = RoundRectangle(OuterRect, 6);
+            // Issue #11: OrbStyle
+            int minorBorderRoundness = e.RibbonOrbDropDown.BorderRoundness - 2;
+            if (minorBorderRoundness < 0)
+                minorBorderRoundness = 0;
+
+            GraphicsPath innerPath = RoundRectangle(InnerRect, minorBorderRoundness);
+            GraphicsPath outerPath = RoundRectangle(OuterRect, minorBorderRoundness);
 
             e.Graphics.SmoothingMode = SmoothingMode.None;
 
@@ -4315,9 +4382,9 @@ namespace System.Windows.Forms
 
         public override void OnRenderRibbonQuickAccessToolbarBackground(RibbonRenderEventArgs e)
         {
-            /// a-----b    a-----b
-            ///  z    |   z       |
-            ///   c---d    c-----d
+            // a-----b    a-----b
+            //  z    |   z       |
+            //   c---d    c-----d
             Rectangle bounds = e.Ribbon.QuickAccessToolbar.Bounds;
             Padding padding = e.Ribbon.QuickAccessToolbar.Padding;
             Padding margin = e.Ribbon.QuickAccessToolbar.Margin;
@@ -4330,9 +4397,9 @@ namespace System.Windows.Forms
             bool aero = e.Ribbon.ActualBorderMode == RibbonWindowMode.NonClientAreaGlass && RibbonDesigner.Current == null;
             if (e.Ribbon.RightToLeft == RightToLeft.Yes)
             {
-                ///   a-----b    a-----b
-                ///  |     z    |       z
-                ///   c---d      c-----d
+                //   a-----b    a-----b
+                //  |     z    |       z
+                //   c---d      c-----d
                 a = new Point(bounds.Left + padding.Left, bounds.Top);
                 b = new Point(bounds.Right + (e.Ribbon.OrbVisible ? margin.Right : 0), bounds.Top);
                 c = new Point(a.X, bounds.Bottom);
@@ -4408,7 +4475,7 @@ namespace System.Windows.Forms
                     if (e.Ribbon.CaptionBarVisible)
                         DrawOrb(e.Graphics, e.Ribbon.OrbBounds, e.Ribbon.OrbImage, e.Ribbon.OrbSelected, e.Ribbon.OrbPressed);
                 }
-                else if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2013) //Michael Spradlin - 05/03/2013 Office 2013 Style Changes
+                else if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2013) //Michael Spradlin - 05/03/2013 Office 2013 Style Changes
                 {
                     //draw 2010 style
                     RibbonRenderEventArgs args = new RibbonRenderEventArgs(e.Ribbon, e.Graphics, e.Ribbon.OrbBounds);
@@ -4426,7 +4493,8 @@ namespace System.Windows.Forms
                     }
 
 
-                    if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+                    if ((e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010) ||
+                        (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
                     {
                         if (e.Ribbon.OrbText != string.Empty)
                         {
@@ -4471,7 +4539,8 @@ namespace System.Windows.Forms
                         WinApi.FillForGlass(e.Graphics, new Rectangle(0, 0, e.Ribbon.Width, e.Ribbon.CaptionBarSize + 1));
                 }
             }
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if ((e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010) ||
+                (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
             {
                 e.Graphics.Clear(ColorTable.RibbonBackground);
                 if (e.Ribbon.ActualBorderMode == RibbonWindowMode.NonClientAreaGlass)
@@ -4536,23 +4605,59 @@ namespace System.Windows.Forms
                       e.Context.Bounds.Right,
                       e.Context.Bounds.Bottom);
 
-            Rectangle r = Rectangle.FromLTRB(
-                 e.Context.Bounds.Left,
-                 e.Context.Bounds.Top,
-                 e.Context.Bounds.Right,
-                 e.Context.Bounds.Bottom);
+            Rectangle r;
+            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
+            {
+                r = Rectangle.FromLTRB(
+                     e.Context.Bounds.Left,
+                     e.Context.Bounds.Top + 13,
+                     e.Context.Bounds.Right,
+                     e.Context.Bounds.Bottom);
+            }
+            else
+            {
+                r = Rectangle.FromLTRB(
+                     e.Context.Bounds.Left,
+                     e.Context.Bounds.Top,
+                     e.Context.Bounds.Right,
+                     e.Context.Bounds.Bottom);
+            }
 
-            Rectangle rH = Rectangle.FromLTRB(
+            Rectangle rH;
+            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
+            {
+                rH = Rectangle.FromLTRB(
+                 e.Context.HeaderBounds.Left,
+                 e.Context.HeaderBounds.Top + 13,
+                 e.Context.HeaderBounds.Right,
+                 e.Context.HeaderBounds.Bottom);
+            }
+            else
+            {
+                rH = Rectangle.FromLTRB(
                  e.Context.HeaderBounds.Left,
                  e.Context.HeaderBounds.Top,
                  e.Context.HeaderBounds.Right,
                  e.Context.HeaderBounds.Bottom);
+            }
 
-            Rectangle rBar = Rectangle.FromLTRB(
+            Rectangle rBar;
+            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
+            {
+                rBar = Rectangle.FromLTRB(
+                 e.Context.Bounds.Left,
+                 e.Context.Bounds.Top + 13,
+                 e.Context.Bounds.Right,
+                 e.Context.Bounds.Top + 5);
+            }
+            else
+            {
+                rBar = Rectangle.FromLTRB(
                  e.Context.Bounds.Left,
                  e.Context.Bounds.Top,
                  e.Context.Bounds.Right,
                  e.Context.Bounds.Top + 5);
+            }
 
             e.Graphics.SetClip(clip);
 
@@ -4597,12 +4702,24 @@ namespace System.Windows.Forms
 
             #region Office_2010
 
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if ((e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010) ||
+                (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
             {
-
-                Color north = Color.FromArgb(200, DarkenColor(e.Context.GlowColor, 0.3F));
-                Color centre = Color.FromArgb(120, DarkenColor(e.Context.GlowColor, 0.2F));
-                Color south = Color.FromArgb(40, DarkenColor(e.Context.GlowColor, 0.0F));
+                Color north;
+                Color centre;
+                Color south;
+                if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+                {
+                    north = Color.FromArgb(200, DarkenColor(e.Context.GlowColor, 0.3F));
+                    centre = Color.FromArgb(120, DarkenColor(e.Context.GlowColor, 0.2F));
+                    south = Color.FromArgb(40, DarkenColor(e.Context.GlowColor, 0.0F));
+                }
+                else
+                {
+                    north = Color.FromArgb(200, DarkenColor(e.Context.GlowColor, 0.1F)); 
+                    centre = north;
+                    south = north; 
+                }
 
                 //Main context portion
                 using (LinearGradientBrush b = new LinearGradientBrush(
@@ -4683,37 +4800,54 @@ namespace System.Windows.Forms
             StringFormat sf = StringFormatFactory.CenterNoWrapTrimEllipsis();
             sf.LineAlignment = StringAlignment.Near;
 
-            Rectangle r = Rectangle.FromLTRB(e.Context.Bounds.Left + e.Ribbon.TabTextMargin.Left,
-                e.Context.Bounds.Top + e.Ribbon.TabTextMargin.Top + 3,
-                e.Context.Bounds.Right - e.Ribbon.TabTextMargin.Right,
-                e.Context.Bounds.Bottom - e.Ribbon.TabTextMargin.Bottom);
+            Rectangle r;
+            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
+            {
+                r = Rectangle.FromLTRB(e.Context.Bounds.Left + e.Ribbon.TabTextMargin.Left,
+                    e.Context.Bounds.Top + e.Ribbon.TabTextMargin.Top + 9,
+                    e.Context.Bounds.Right - e.Ribbon.TabTextMargin.Right,
+                    e.Context.Bounds.Bottom - e.Ribbon.TabTextMargin.Bottom);
+            }
+            else
+            {
+                r = Rectangle.FromLTRB(e.Context.Bounds.Left + e.Ribbon.TabTextMargin.Left,
+                    e.Context.Bounds.Top + e.Ribbon.TabTextMargin.Top + 3,
+                    e.Context.Bounds.Right - e.Ribbon.TabTextMargin.Right,
+                    e.Context.Bounds.Bottom - e.Ribbon.TabTextMargin.Bottom);
+            }
             Rectangle rShadow = r;
             rShadow.Offset(0, 1);
 
             var tabText = e.Context.Text;
 
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2013)
+            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || 
+                e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || 
+                e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended || 
+                e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2013)
             {
                 // Text Shadow
-                using (Brush b = new SolidBrush(GetTextColor(true, DarkenColor(e.Context.GlowColor, 0.5F))))
+                if (e.Ribbon.OrbStyle != RibbonOrbStyle.Office_2010_Extended)
                 {
-                    if (e.Ribbon.ActualBorderMode == RibbonWindowMode.NonClientAreaGlass)
+                    using (Brush b = new SolidBrush(GetTextColor(true, DarkenColor(e.Context.GlowColor, 0.5F))))
                     {
-                        GraphicsPath p = new GraphicsPath();
+                        if (e.Ribbon.ActualBorderMode == RibbonWindowMode.NonClientAreaGlass)
+                        {
+                            GraphicsPath p = new GraphicsPath();
 
-                        float emSize = e.Graphics.DpiY * e.Ribbon.RibbonTabFont.Size / 72;
-                        p.AddString(tabText, e.Ribbon.RibbonTabFont.FontFamily, (int)FontStyle.Bold, emSize, rShadow, sf);
+                            float emSize = e.Graphics.DpiY * e.Ribbon.RibbonTabFont.Size / 72;
+                            p.AddString(tabText, e.Ribbon.RibbonTabFont.FontFamily, (int)FontStyle.Bold, emSize, rShadow, sf);
 
-                        SmoothingMode sbuff = e.Graphics.SmoothingMode;
-                        e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
-                        e.Graphics.FillPath(b, p);
-                        e.Graphics.SmoothingMode = sbuff;
-                    }
-                    else
-                    {
-                        e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-                        Font boldfont = new Font(e.Ribbon.RibbonTabFont, FontStyle.Bold);
-                        e.Graphics.DrawString(tabText, boldfont, b, rShadow, sf);
+                            SmoothingMode sbuff = e.Graphics.SmoothingMode;
+                            e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+                            e.Graphics.FillPath(b, p);
+                            e.Graphics.SmoothingMode = sbuff;
+                        }
+                        else
+                        {
+                            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+                            Font boldfont = new Font(e.Ribbon.RibbonTabFont, FontStyle.Bold);
+                            e.Graphics.DrawString(tabText, boldfont, b, rShadow, sf);
+                        }
                     }
                 }
 
@@ -4723,8 +4857,15 @@ namespace System.Windows.Forms
                     if (e.Ribbon.ActualBorderMode == RibbonWindowMode.NonClientAreaGlass)
                     {
                         GraphicsPath p = new GraphicsPath();
-
-                        float emSize = e.Graphics.DpiY * e.Ribbon.RibbonTabFont.Size / 72;
+                        float emSize;
+                        if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
+                        {
+                            emSize = e.Graphics.DpiY * e.Ribbon.RibbonTabFont.Size / 96;
+                        }
+                        else
+                        {
+                            emSize = e.Graphics.DpiY * e.Ribbon.RibbonTabFont.Size / 72;
+                        }
                         p.AddString(tabText, e.Ribbon.RibbonTabFont.FontFamily, (int)FontStyle.Bold, emSize, r, sf);
 
                         SmoothingMode sbuff = e.Graphics.SmoothingMode;
@@ -4764,7 +4905,9 @@ namespace System.Windows.Forms
 
             tabText = FormatText(tabText, e.Tab.AltKey, e.Ribbon.AltPressed);
 
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010) //Michael Spradlin - 05/03/2013 Office 2013 Style Changes
+            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || 
+                e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 ||
+                e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended) //Michael Spradlin - 05/03/2013 Office 2013 Style Changes
             {
                 using (Brush b = new SolidBrush(GetTextColor(e.Tab.Enabled, e.Tab.Active ? ColorTable.TabActiveText : ColorTable.TabText)))
                 {
@@ -4832,7 +4975,9 @@ namespace System.Windows.Forms
             else
             {
                 if (e.Panel.Selected
-                   && (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010))
+                   && (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || 
+                       e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 ||
+                       e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended))
                 {
                     DrawPanelSelected(e);
                 }
@@ -4857,7 +5002,9 @@ namespace System.Windows.Forms
                  e.Panel.Bounds.Right - 1,
                  e.Panel.Bounds.Bottom - 1);
 
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || 
+                e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 ||
+                e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
             {
                 using (StringFormat sf = StringFormatFactory.Center())
                 using (Brush b = new SolidBrush(GetTextColor(e.Panel.Enabled, ColorTable.PanelText)))
@@ -5117,7 +5264,7 @@ namespace System.Windows.Forms
             }
             else if (e.Item is RibbonSeparator)
             {
-                if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+                if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
                     foreColor = GetTextColor(e.Item.Enabled, ColorTable.Text);
                 else if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2013)
                     foreColor = GetTextColor(e.Item.Enabled, ColorTable.RibbonItemText_2013);
@@ -5136,7 +5283,7 @@ namespace System.Windows.Forms
 
             if (foreColor.Equals(Color.Empty))
             {
-                if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+                if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
                     foreColor = GetTextColor(e.Item.Enabled, ColorTable.Text);
                 else if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2013)
                     foreColor = GetTextColor(e.Item.Enabled, ColorTable.RibbonItemText_2013);
@@ -5572,7 +5719,7 @@ namespace System.Windows.Forms
 
         public override void OnRenderToolTipText(RibbonToolTipRenderEventArgs e)
         {
-            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010)
+            if (e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2007 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010 || e.Ribbon.OrbStyle == RibbonOrbStyle.Office_2010_Extended)
             {
                 using (Brush b = new SolidBrush(ColorTable.ToolTipText))
                 {

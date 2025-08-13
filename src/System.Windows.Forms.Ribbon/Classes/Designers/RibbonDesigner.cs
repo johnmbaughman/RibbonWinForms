@@ -45,6 +45,10 @@ namespace System.Windows.Forms
             Current = this;
         }
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -54,14 +58,6 @@ namespace System.Windows.Forms
             }
         }
         //Finalize is called by base class "System.ComponentModel.Design.ComponentDesigner"
-        //Finalize should normally used to dispose unmanaged resources 
-        //~RibbonDesigner()
-        //{
-        //    if (Current == this)
-        //    {
-        //        Current = null;
-        //    }
-        //}
 
         #endregion
 
@@ -257,7 +253,7 @@ namespace System.Windows.Forms
                         return;
                     case 0x202: //WM_LBUTTONUP
                     case 0x205: //WM_RBUTTONUP
-                        HitOn(WinApi.LoWord((int)m.LParam), WinApi.HiWord((int)m.LParam));
+                        HitOn(WinApi.Get_X_LParam(m.LParam), WinApi.Get_Y_LParam(m.LParam));
                         return;
                     default:
                         break;

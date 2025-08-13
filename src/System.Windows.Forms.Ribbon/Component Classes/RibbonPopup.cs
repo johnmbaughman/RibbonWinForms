@@ -53,6 +53,7 @@ namespace System.Windows.Forms
         {
             SetStyle(ControlStyles.Opaque, true);
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            SetStyle(ControlStyles.UserPaint, true);
             SetStyle(ControlStyles.Selectable, false);
             BorderRoundness = 3;
         }
@@ -83,25 +84,25 @@ namespace System.Windows.Forms
         /// <param name="screenLocation"></param>
         public void Show(Point screenLocation)
         {
-           if (WrappedDropDown == null)
-           {
-              ToolStripControlHost host = new ToolStripControlHost(this);
+            if (WrappedDropDown == null)
+            {
+                ToolStripControlHost host = new ToolStripControlHost(this);
                 WrappedDropDown = new RibbonWrappedDropDown
                 {
                     AutoClose = RibbonDesigner.Current != null
                 };
                 WrappedDropDown.Items.Add(host);
 
-              WrappedDropDown.Padding = Padding.Empty;
-              WrappedDropDown.Margin = Padding.Empty;
-              host.Padding = Padding.Empty;
-              host.Margin = Padding.Empty;
+                WrappedDropDown.Padding = Padding.Empty;
+                WrappedDropDown.Margin = Padding.Empty;
+                host.Padding = Padding.Empty;
+                host.Margin = Padding.Empty;
 
-              WrappedDropDown.Opening += ToolStripDropDown_Opening;
-              WrappedDropDown.Closing += ToolStripDropDown_Closing;
-              WrappedDropDown.Closed += ToolStripDropDown_Closed;
-              WrappedDropDown.Size = Size;
-           }
+                WrappedDropDown.Opening += ToolStripDropDown_Opening;
+                WrappedDropDown.Closing += ToolStripDropDown_Closing;
+                WrappedDropDown.Closed += ToolStripDropDown_Closed;
+                WrappedDropDown.Size = Size;
+            }
             WrappedDropDown.Show(screenLocation);
             RibbonPopupManager.Register(this);
 
@@ -117,7 +118,7 @@ namespace System.Windows.Forms
         {
             OnOpening(e);
         }
-        
+
         /// <summary>
         /// Called when pop-up is being opened
         /// </summary>
@@ -149,7 +150,7 @@ namespace System.Windows.Forms
         {
             OnClosed(EventArgs.Empty);
         }
-       
+
         /// <summary>
         /// Closes this popup.
         /// </summary>
@@ -212,7 +213,7 @@ namespace System.Windows.Forms
         }
 
         /// <summary>
-        /// Raises the <see cref="Paint"/> event
+        /// Raises the <see cref="Control.Paint"/> event
         /// </summary>
         /// <param name="e"></param>
         protected override void OnPaint(PaintEventArgs e)
